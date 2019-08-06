@@ -22,6 +22,7 @@ import runBenchmarks
 
 fun main() {
     runBenchmarks(listBuilderOutputFileName) { this
-            .include("immutableList.builder")
+            .include("immutableList.builder.Add")
+            .include("immutableList.builder.Remove")
     }
 }
