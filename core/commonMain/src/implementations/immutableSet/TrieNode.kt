@@ -188,18 +188,17 @@ internal class TrieNode<E>(
     }
 
 
-    private fun removeCellAtIndex(cellIndex: Int, positionMask: Int): TrieNode<E>? {
+    private fun removeCellAtIndex(cellIndex: Int, positionMask: Int): TrieNode<E> {
 //        assert(!hasNoCellAt(positionMask))
-        // It is possible only when this node is the root node
-        if (buffer.size == 1) return null
+//        assert(buffer.size > 1) can be false only for the root node
 
         val newBuffer = buffer.removeCellAtIndex(cellIndex)
         return TrieNode(bitmap xor positionMask, newBuffer)
     }
 
-    private fun mutableRemoveCellAtIndex(cellIndex: Int, positionMask: Int, owner: MutabilityOwnership): TrieNode<E>? {
+    private fun mutableRemoveCellAtIndex(cellIndex: Int, positionMask: Int, owner: MutabilityOwnership): TrieNode<E> {
 //        assert(!hasNoCellAt(positionMask))
-        if (buffer.size == 1) return null
+//        assert(buffer.size > 1)
 
         if (ownedBy === owner) {
             buffer = buffer.removeCellAtIndex(cellIndex)
@@ -210,16 +209,12 @@ internal class TrieNode<E>(
         return TrieNode(bitmap xor positionMask, newBuffer, owner)
     }
 
-    private fun collisionRemoveElementAtIndex(i: Int): TrieNode<E>? {
-        if (buffer.size == 1) return null
-
+    private fun collisionRemoveElementAtIndex(i: Int): TrieNode<E> {
         val newBuffer = buffer.removeCellAtIndex(i)
         return TrieNode(0, newBuffer)
     }
 
-    private fun mutableCollisionRemoveElementAtIndex(i: Int, owner: MutabilityOwnership): TrieNode<E>? {
-        if (buffer.size == 1) return null
-
+    private fun mutableCollisionRemoveElementAtIndex(i: Int, owner: MutabilityOwnership): TrieNode<E> {
         if (ownedBy === owner) {
             buffer = buffer.removeCellAtIndex(i)
             return this
@@ -249,7 +244,7 @@ internal class TrieNode<E>(
         return TrieNode(0, newBuffer, mutator.ownership)
     }
 
-    private fun collisionRemove(element: E): TrieNode<E>? {
+    private fun collisionRemove(element: E): TrieNode<E> {
         val index = buffer.indexOf(element)
         if (index != -1) {
             return collisionRemoveElementAtIndex(index)
@@ -257,7 +252,7 @@ internal class TrieNode<E>(
         return this
     }
 
-    private fun mutableCollisionRemove(element: E, mutator: PersistentHashSetBuilder<*>): TrieNode<E>? {
+    private fun mutableCollisionRemove(element: E, mutator: PersistentHashSetBuilder<*>): TrieNode<E> {
         val index = buffer.indexOf(element)
         if (index != -1) {
             mutator.size--
@@ -333,7 +328,7 @@ internal class TrieNode<E>(
         return mutableMoveElementToNode(cellIndex, elementHash, element, shift, mutator.ownership)
     }
 
-    fun remove(elementHash: Int, element: E, shift: Int): TrieNode<E>? {
+    fun remove(elementHash: Int, element: E, shift: Int): TrieNode<E> {
         val cellPositionMask = 1 shl indexSegment(elementHash, shift)
 
         if (hasNoCellAt(cellPositionMask)) { // element is absent
@@ -348,7 +343,6 @@ internal class TrieNode<E>(
             } else {
                 targetNode.remove(elementHash, element, shift + LOG_MAX_BRANCHING_FACTOR)
             }
-            checkNotNull(newNode)
             if (targetNode === newNode) return this
             return updateNodeAtIndex(cellIndex, newNode)
         }
@@ -359,7 +353,7 @@ internal class TrieNode<E>(
         return this
     }
 
-    fun mutableRemove(elementHash: Int, element: E, shift: Int, mutator: PersistentHashSetBuilder<*>): TrieNode<E>? {
+    fun mutableRemove(elementHash: Int, element: E, shift: Int, mutator: PersistentHashSetBuilder<*>): TrieNode<E> {
         val cellPositionMask = 1 shl indexSegment(elementHash, shift)
 
         if (hasNoCellAt(cellPositionMask)) { // element is absent
@@ -374,7 +368,6 @@ internal class TrieNode<E>(
             } else {
                 targetNode.mutableRemove(elementHash, element, shift + LOG_MAX_BRANCHING_FACTOR, mutator)
             }
-            checkNotNull(newNode)
             if (ownedBy === mutator.ownership || targetNode !== newNode) {
                 return mutableUpdateNodeAtIndex(cellIndex, newNode, mutator.ownership)
             }
