@@ -67,9 +67,7 @@ task benchmarkAllSets(group: "Benchmark") {
 // hash based
 task benchmarkAllHashBaseds(group: "Benchmark") {
     dependsOn benchmarkHashSet
-    dependsOn benchmarkHashSetBuilder
     dependsOn benchmarkHashMap
-    dependsOn benchmarkHashMapBuilder
 }
 
 // list

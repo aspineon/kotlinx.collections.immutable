@@ -12,7 +12,7 @@ import runBenchmarks
 
 fun main() {
     runBenchmarks(hashSetOutputFileName) { this
-            .include("immutableSet")
+            .include("immutableSet.Canonicalization")
             .exclude("builder")
             .param(implementationParam, "hash")
     }
