@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
+
 plugins {
     id("kotlin-multiplatform")
     `maven-publish`
@@ -102,5 +104,14 @@ tasks {
     named("jvmTest", Test::class) {
         maxHeapSize = "1024m"
         executable = "$JDK_6/bin/java"
+    }
+
+    named("jsTestPackageJson", KotlinPackageJsonTask::class) {
+        doLast {
+            with(packageJson.resolveSibling("test/mocha.opts")) {
+                parentFile.mkdirs()
+                writeText("--timeout 30000")
+            }
+        }
     }
 }
