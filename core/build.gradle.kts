@@ -32,7 +32,11 @@ kotlin {
 
     js {
         nodejs {
-//            testTask { }
+            testTask {
+                useMocha {
+                    timeout = "30000"
+                }
+            }
         }
         compilations.all {
             kotlinOptions {
@@ -104,14 +108,5 @@ tasks {
     named("jvmTest", Test::class) {
         maxHeapSize = "1024m"
         executable = "$JDK_6/bin/java"
-    }
-
-    named("jsTestPackageJson", KotlinPackageJsonTask::class) {
-        doLast {
-            with(packageJson.resolveSibling("test/mocha.opts")) {
-                parentFile.mkdirs()
-                writeText("--timeout 30000")
-            }
-        }
     }
 }
